@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import static example.util.DBResource.DBResource;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.internal.matchers.StringContains.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -82,5 +85,21 @@ public class DBResourceTest {
 
         // then
         assertTrue("close OK", true);
+    }
+
+    @Test
+    public void should_throw_exception_when_object_has_no_close_method() throws Exception {
+        // given
+        Object objectHasNoCloseMethod = new Object();
+
+        try {
+            // when
+            new DBResource(objectHasNoCloseMethod).close();
+            fail();
+        } catch (IllegalStateException e) {
+            // then
+            assertThat(e.getMessage(), containsString("NoSuchMethodException"));
+            assertThat(e.getMessage(), containsString("close()"));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package example.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +14,8 @@ class DBResource {
 
     private Object resource;
 
-    private DBResource(Object resource) {
+    @VisibleForTesting
+    DBResource(Object resource) {
         this.resource = resource;
     }
 
@@ -40,17 +42,16 @@ class DBResource {
             throw new IllegalStateException(e);
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
         }
     }
 
-    private Optional<Method> getCloseMethod() {
+    private Optional<Method> getCloseMethod() throws NoSuchMethodException {
         if (resource == null) {
             return Optional.absent();
         }
-        try {
-            return Optional.of(resource.getClass().getDeclaredMethod("close"));
-        } catch (NoSuchMethodException e) {
-            return Optional.absent();
-        }
+
+        return Optional.of(resource.getClass().getDeclaredMethod("close"));
     }
 }
