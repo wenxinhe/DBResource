@@ -1,5 +1,6 @@
 package example.util;
 
+import example.util.invisible.InvisibleCloseableFactory;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -128,6 +129,21 @@ public class DBResourceTest {
 
         // then
         assertTrue("should closed.", synchronizedCloseable.isClosed());
+    }
+
+    @Test
+    public void should_close_OK_when_close_method_is_invisible() throws Exception {
+        // given
+        MyCloseable invisibleCloseable = new InvisibleCloseableFactory().getInvisibleCloseable();
+
+        assertFalse("should NOT closed.", invisibleCloseable.isClosed());
+
+        // when
+        new DBResource(invisibleCloseable).close();
+
+        // then
+        assertTrue("should closed.", invisibleCloseable.isClosed());
+
     }
 
     public static interface MyCloseable {

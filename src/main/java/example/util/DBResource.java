@@ -36,7 +36,9 @@ class DBResource {
             Optional<Method> optionalClose = getCloseMethod();
 
             if (optionalClose.isPresent()) {
-                optionalClose.get().invoke(resource);
+                Method method = optionalClose.get();
+                method.setAccessible(true);
+                method.invoke(resource);
             }
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
