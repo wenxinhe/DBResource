@@ -116,6 +116,20 @@ public class DBResourceTest {
         assertTrue("should closed.", closeMethodFromBaseClass.isClosed());
     }
 
+    @Test
+    public void should_close_OK_when_close_method_is_synchronized() throws Exception {
+        // given
+        MyCloseable synchronizedCloseable = new SynchronizedCloseable();
+
+        assertFalse("should NOT closed.", synchronizedCloseable.isClosed());
+
+        // when
+        new DBResource(synchronizedCloseable).close();
+
+        // then
+        assertTrue("should closed.", synchronizedCloseable.isClosed());
+    }
+
     public static interface MyCloseable {
         public void close() throws SQLException;
         public boolean isClosed();
@@ -136,5 +150,18 @@ public class DBResourceTest {
     }
 
     private static class InheritedCloseable extends BaseCloseable {
+    }
+
+    private static class SynchronizedCloseable implements MyCloseable {
+        private boolean isClosed;
+        @Override
+        public synchronized void close() throws SQLException {
+            isClosed = true;
+        }
+
+        @Override
+        public boolean isClosed() {
+            return isClosed;
+        }
     }
 }
