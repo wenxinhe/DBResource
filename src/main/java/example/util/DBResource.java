@@ -52,6 +52,6 @@ class DBResource {
             return Optional.absent();
         }
 
-        return Optional.of(resource.getClass().getDeclaredMethod("close"));
+        return Optional.of(resource.getClass().getMethod("close"));
     }
 }
